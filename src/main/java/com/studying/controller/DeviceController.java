@@ -1,11 +1,12 @@
 package com.studying.controller;
 
+import com.studying.dto.DeviceRequestDTO;
 import com.studying.dto.DeviceResponseDTO;
 import com.studying.entity.DeviceEntity;
 import com.studying.mapper.DeviceMapper;
 import com.studying.service.DeviceService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,8 +16,6 @@ import java.util.List;
 import java.util.UUID;
 
 
-
-
 @RestController
 @RequestMapping("/devices")
 @RequiredArgsConstructor
@@ -24,37 +23,20 @@ public class DeviceController {
 
     private final DeviceService deviceService;
 
-    DeviceMapper deviceMapper = new DeviceMapper();
-
-    @GetMapping(path = "/")
-    public ResponseEntity<List<DeviceResponseDTO>> getAll(){
-        DeviceResponseDTO dto = DeviceResponseDTO.builder()
-                .id(UUID.randomUUID())
-                .name("Teste Aula")
-                .brand("Marca de Teste")
-                .createdAt(ZonedDateTime.now()).build();
-
-        return ResponseEntity.ok(List.of(dto));
-    }
-
-
     @GetMapping(path = "/all")
-    public ResponseEntity<List<DeviceResponseDTO>> getList(){
+    public ResponseEntity<List<DeviceResponseDTO>> getList() {
 
-        List<DeviceResponseDTO> lstDto = new ArrayList<>();
-        List<DeviceEntity> lstEntities = this.deviceService.getAllDevices();
+        final var lista = this.deviceService.getAllDevices()
+                .stream()
+                .map(DeviceMapper::mapToDeviceResponseDTO)
+                .toList();
 
-        lstEntities.forEach(x -> {
-            lstDto.add(deviceMapper.mapToDeviceResponseDTO(x));
-        });
-
-
-        return ResponseEntity.ok(lstDto);
+        return ResponseEntity.ok(lista);
     }
 
     @PostMapping(path = "/create")
-    public DeviceResponseDTO create(@RequestBody DeviceResponseDTO deviceResponseDTO){
-
-        return deviceService.createDevice(deviceResponseDTO);
+    public ResponseEntity<DeviceResponseDTO> create(@RequestBody @Valid final DeviceRequestDTO deviceRequestDTO) {
+        final var deviceEntity = deviceService.createDevice(DeviceMapper.mapToDeviceEntity(deviceRequestDTO));
+        return ResponseEntity.ok(DeviceMapper.mapToDeviceResponseDTO(deviceEntity));
     }
 }
