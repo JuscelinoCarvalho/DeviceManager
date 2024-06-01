@@ -4,6 +4,7 @@ import com.studying.dto.DeviceRequestDTO;
 import com.studying.dto.DeviceResponseDTO;
 import com.studying.mapper.DeviceMapper;
 import com.studying.service.DeviceService;
+import jakarta.persistence.Table;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -31,7 +32,7 @@ public class DeviceController {
         return ResponseEntity.ok(lista);
     }
 
-    @PostMapping
+    @PostMapping("/create")
     public ResponseEntity<DeviceResponseDTO> create(@RequestBody @Valid final DeviceRequestDTO deviceRequestDTO) {
         final var deviceEntity = deviceService.createDevice(DeviceMapper.mapToDeviceEntity(deviceRequestDTO));
         return ResponseEntity.ok(DeviceMapper.mapToDeviceResponseDTO(deviceEntity));
@@ -51,7 +52,15 @@ public class DeviceController {
         return ResponseEntity.noContent().build();
     }
 
-    //TODO: Another calls
+    @PatchMapping("/update")
+    public ResponseEntity<Boolean> updateDevice(@RequestBody DeviceResponseDTO device){
+        return ResponseEntity.ok(deviceService.updateDevice(device));
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<Boolean> deleteDevice(@PathVariable("id") final UUID idDevice){
+        return ResponseEntity.ok(deviceService.deleteDeviceById(idDevice));
+    }
 }
 
 

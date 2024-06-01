@@ -1,9 +1,12 @@
 package com.studying.service;
 
+import com.studying.dto.DeviceResponseDTO;
 import com.studying.entity.DeviceEntity;
+import com.studying.mapper.DeviceMapper;
 import com.studying.repository.DeviceRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 import java.util.Optional;
@@ -31,5 +34,33 @@ public class DeviceService  {
     public void deleteDeviceByID(final UUID id){
         deviceRepository.deleteById(id);
     }
+
+
+    public boolean updateDevice(DeviceResponseDTO device){
+
+        DeviceEntity deviceEntity = DeviceMapper.mapToDeviceEntity(device);
+
+        try{
+            deviceRepository.save(deviceEntity);
+            return  true;
+        }catch(Exception ex){
+            return false;
+        }
+
+
+    }
+
+    public boolean deleteDeviceById(final UUID deviceId){
+        try{
+            deviceRepository.deleteById(deviceId);
+            return true;
+        }catch (Exception ex){
+            return false;
+        }
+
+    }
+
+
+
 
 }

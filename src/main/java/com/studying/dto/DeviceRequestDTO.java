@@ -19,4 +19,7 @@ public class DeviceRequestDTO {
     private String brand;
     private ZonedDateTime createdAt;
 
+    public void geraErro(){
+        throw new RuntimeException();
+    }
 }
